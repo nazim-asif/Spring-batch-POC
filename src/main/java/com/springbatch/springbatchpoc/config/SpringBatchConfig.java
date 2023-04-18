@@ -6,7 +6,9 @@ import com.springbatch.springbatchpoc.entity.Customer_bkp;
 import com.springbatch.springbatchpoc.listener.StepSkipListener;
 import com.springbatch.springbatchpoc.partitioning.ColumnRangePartitioner;
 import com.springbatch.springbatchpoc.repository.CustomerBkpRepo;
+import com.springbatch.springbatchpoc.repository.CustomerCustomRepo;
 import com.springbatch.springbatchpoc.repository.CustomerRepository;
+import com.springbatch.springbatchpoc.repository.WritterCustomRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -15,10 +17,8 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.partition.PartitionHandler;
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
-import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -32,8 +32,10 @@ public class SpringBatchConfig {
     private StepBuilderFactory stepBuilderFactory;
 
     private CustomerRepository customerRepository;
+    private CustomerCustomRepo customerCustomRepo;
     private CustomerBkpRepo customerBkpRepo;
     private CustomerWriter customerWriter;
+    private DynamicCustomerWriter dynamicCustomerWriter;
 
 
 //    @Bean
@@ -78,19 +80,35 @@ public class SpringBatchConfig {
     @Bean
     public PartitionHandler partitionHandler() {
         TaskExecutorPartitionHandler taskExecutorPartitionHandler = new TaskExecutorPartitionHandler();
-        taskExecutorPartitionHandler.setGridSize(5);
+        taskExecutorPartitionHandler.setGridSize(4);
         taskExecutorPartitionHandler.setTaskExecutor(taskExecutor());
         taskExecutorPartitionHandler.setStep(slaveStep());
         return taskExecutorPartitionHandler;
     }
-
-    @Bean
+//non dynamic
+/*    @Bean
     public Step slaveStep() {
         return stepBuilderFactory.get("slaveStep").<Customer, Customer_bkp>chunk(500)
                 .reader(new CustomItemReader(customerRepository))
                 .processor(new CustomerProcessor())
                 //.writer(writer())
                 .writer(customerWriter)
+                .faultTolerant()
+                //.skipLimit(100)
+                //.skip(NumberFormatException.class)
+                //.noSkip(IllegalArgumentException.class)
+                .listener(new StepSkipListener())
+                .skipPolicy(new ExceptionSkipPolicy())
+                .build();
+    }   */
+    // end non dynamic
+    @Bean
+    public Step slaveStep() {
+        return stepBuilderFactory.get("slaveStep").<Object, Object>chunk(500)
+                .reader(new DynamicCustomItemReader(customerRepository, customerCustomRepo))
+                .processor(new CustomerProcessor())
+                //.writer(writer())
+                .writer(dynamicCustomerWriter)
                 .faultTolerant()
                 //.skipLimit(100)
                 //.skip(NumberFormatException.class)

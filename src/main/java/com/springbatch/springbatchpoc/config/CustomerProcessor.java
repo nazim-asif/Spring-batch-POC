@@ -8,17 +8,21 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomerProcessor implements ItemProcessor<Customer, Customer_bkp> {
+public class CustomerProcessor implements ItemProcessor<Object, Object> {
 
+//    @Override
+//    public Customer_bkp process(Customer customer) throws Exception {
+//        Customer_bkp bkp = new Customer_bkp();
+//        BeanUtils.copyProperties(customer, bkp);
+//        return bkp;
+////        if(customer.getCountry().equals("United States")) {
+////            return customer;
+////        }else{
+////            return null;
+////        }
+//    }
     @Override
-    public Customer_bkp process(Customer customer) throws Exception {
-        Customer_bkp bkp = new Customer_bkp();
-        BeanUtils.copyProperties(customer, bkp);
-        return bkp;
-//        if(customer.getCountry().equals("United States")) {
-//            return customer;
-//        }else{
-//            return null;
-//        }
+    public Object process(Object obj) throws Exception {
+        return obj;
     }
 }

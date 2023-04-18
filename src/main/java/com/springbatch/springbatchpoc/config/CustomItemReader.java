@@ -26,7 +26,7 @@ public class CustomItemReader implements ItemReader<Customer>, ItemStream {
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        List<Customer> customers = customerRepository.findAll();
+        List<Customer> customers = customerRepository.findAllLimi10K();
         customerIterator = customers.iterator();
     }
 
