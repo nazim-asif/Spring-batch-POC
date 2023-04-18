@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
-public class DynamicCustomItemReader implements ItemReader<Customer>, ItemStream {
+public class DynamicCustomItemReader implements ItemReader<Object>, ItemStream {
 
 //    private Iterator<Customer> customerIterator;
     private Iterator<Map<String, Object>> customerIterator;
@@ -44,9 +44,9 @@ public class DynamicCustomItemReader implements ItemReader<Customer>, ItemStream
     }
 
     @Override
-    public Customer read() {
+    public Object read() {
         if (customerIterator != null && customerIterator.hasNext()) {
-            return (Customer) customerIterator.next();
+            return customerIterator.next();
         } else {
             return null;
         }

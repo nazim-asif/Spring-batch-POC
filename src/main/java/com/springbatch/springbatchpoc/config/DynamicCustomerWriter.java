@@ -22,6 +22,6 @@ public class DynamicCustomerWriter implements ItemWriter<Object> {
     @Override
     public void write(List<?> list) throws Exception {
         System.out.println("Thread Name : -"+Thread.currentThread().getName());
-        customerRepository.findEntitiesByCriteria();
+        customerRepository.findEntitiesByCriteria(list);
     }
 }
