@@ -25,24 +25,6 @@ public class WritterCustomRepo {
          saveEntities(list, "customers_bkp");
     }
 
-    public void saveEntities(List<Map<String, Object>> entities) {
-        for (Map<String, Object> entity : entities) {
-            Integer customerId = (Integer) entity.get("customer_id");
-            String contact = (String) entity.get("contact");
-            String country = (String) entity.get("country");
-            String dob = (String) entity.get("dob");
-            String email = (String) entity.get("email");
-            String firstName = (String) entity.get("first_name");
-            String gender = (String) entity.get("gender");
-            String lastName = (String) entity.get("last_name");
-
-            String sql = "INSERT INTO customers_bkp (customer_id,contact , country, dob,email, first_name, gender, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            Object[] args = { customerId, contact, country,dob, email,  firstName, gender, lastName};
-            jdbcTemplate.update(sql, args);
-        }
-
-    }
-
     public void saveEntities(List<Map<String, Object>> entities, String tableName) {
         Map<String, Object> firstEntity = entities.get(0);
         String sql = generateInsertSql(tableName, firstEntity.keySet());
